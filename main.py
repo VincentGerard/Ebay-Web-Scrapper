@@ -43,8 +43,8 @@ def main():
 		#Variables
 		pageNumber = 0
 		ebayUrl = "https://www.ebay-kleinanzeigen.de"
-		userAgent ="Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
-		headers = { 'User-Agent' : userAgent}
+		userAgent ="Mozilla/5.0 (Macintosh; Intel Mac OS X 12_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"
+		headers = { 'User-Agent' : userAgent,'Connection': 'keep-alive', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*'}
 
 		#HtmlSearchTags
 		htmlItem = "ad-listitem lazyload-item"
@@ -53,12 +53,10 @@ def main():
 		htmlEllipsis = "ellipsis"
 		htmlImage = "imagebox"
 
-		
-		
 		#Search all 50 pages
-		while pageNumber <= 50:
+		while True:
 			url = "https://www.ebay-kleinanzeigen.de/s-preis:" + str(minPrice) + ":/seite:" + str(pageNumber) +"/marklin/k0"
-			result = requests.get(url,headers=headers, cookies=cookies)
+			result = requests.Session().get(url,headers=headers, cookies=cookies)
 			myPrint("URL = " + url)
 			myPrint("StatusCode = " + str(result.status_code))
 
@@ -66,9 +64,13 @@ def main():
 
 			# Manual Testing when the website does not repond(to much spam?)
 			#html_text = open("test.html", 'r').read()
+
+			itemNumber = html_text.count(htmlItem)
+			if itemNumber == 0:
+				sleep(60)
+			myPrint("Item Number = " + str(itemNumber))
 			
 			soup = BeautifulSoup(html_text, 'lxml')
-			myPrint("Item Number = " + str(html_text.count(htmlItem)))
 			jobs = soup.find_all('li', class_ = htmlItem)
 
 			for job in jobs:
@@ -85,8 +87,7 @@ def main():
 				myPrint("Price = " + str(price))
 				myPrint("Url   = " + urlLink)
 				myPrint("Image = " + imageLink + "\n")
-			pageNumber = pageNumber + 1
-			sleep(5)
+			sleep(60 * 5)
 	except Exception as e:
 			myPrint("Error exception caught!")
 			myPrint(e)
