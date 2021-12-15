@@ -9,6 +9,7 @@ import datetime
 import configparser
 import json
 from http.cookies import SimpleCookie
+import os.path
 
 """
 Max page = 50
@@ -17,9 +18,18 @@ Cookies in congif files must be with ';' separator, juste copy paste google chro
 
 def main():
 	try:
-		#Load Config
-		with open('config.json', 'r') as f:
-			config = json.load(f)
+		#Test for custom configs
+		if os.path.isfile("config.json"):
+			#Load Config
+			with open('config.json', 'r') as f:
+				config = json.load(f)
+				myPrint("Loading custom config")
+		else:
+			#Load Default config
+			with open('default.json', 'r') as f:
+				config = json.load(f)
+				myPrint("Loading default config")
+
 		minPrice = config['minPrice']
 		
 		googleChromeCookie = config['googleChromeCookie']
